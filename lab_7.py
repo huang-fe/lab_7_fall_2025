@@ -105,6 +105,7 @@ class StateMachineNode(Node):
             else: 
                 self.last_detection_pos = self.target_pos
                 self.target_pos = np.argmin([np.linalg.norm(c-self.last_detection_pos) for c in centers])
+            print("target pos: ", self.target_pos)
             self.last_detection_time = self.get_clock().now()
 
 
