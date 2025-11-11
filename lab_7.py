@@ -125,7 +125,7 @@ class StateMachineNode(Node):
         # - If time_since_detection > TIMEOUT, transition to State.SEARCH
         # - Otherwise, transition to State.TRACK
         time_since_detection = (self.get_clock().now() - self.last_detection_time).nanoseconds / 1e-9   # TODO: Calculate time since last detection
-        
+        print("timeee ", time_since_detection)
         if time_since_detection > TIMEOUT:  # TODO: Replace with condition checking
             self.state = State.SEARCH
         else:
