@@ -17,7 +17,7 @@ IMAGE_WIDTH = 700
 TIMEOUT = 2  # TODO: Set the timeout threshold (in seconds) for determining when a detection is too old
 SEARCH_YAW_VEL = np.pi/4  # TODO: Set the angular velocity (rad/s) for rotating while searching for the target
 TRACK_FORWARD_VEL = 0.2  # TODO: Set the forward velocity (m/s) while tracking the target
-KP = 8  # TODO: Set the proportional gain for the proportional controller that centers the target
+KP = 8.0  # TODO: Set the proportional gain for the proportional controller that centers the target
 
 class State(Enum):
     IDLE = 0     # Stay in place, no tracking
@@ -96,13 +96,13 @@ class StateMachineNode(Node):
         - Store the normalized position in self.target_pos
         - Update self.last_detection_time with the current timestamp
         """
-        if msg.detections:
+        if len(msg.detections) > 0:
             # bbox=vision_msgs.msg.BoundingBox2D(center=vision_msgs.msg.Pose2D(position=vision_msgs.msg.Point2D(x=285.0068359375, y=299.092529296875)
             centers = [(detection.bbox.center.position.x / IMAGE_WIDTH - 0.5) for detection in msg.detections]
-            print("centers: ", centers)
+            #print("centers: ", centers)
             self.last_detection_pos = self.target_pos
             self.target_pos = centers[np.argmin([np.abs(c-self.last_detection_pos) for c in centers])]
-            print("target pos: ", self.target_pos)
+            #print("target pos: ", self.target_pos)
             self.last_detection_time = self.get_clock().now()
 
 
@@ -146,6 +146,7 @@ class StateMachineNode(Node):
             # - Set yaw_command to rotate in the direction where the target was last seen
             # - Use SEARCH_YAW_VEL and rotate opposite to the sign of self.target_pos
             # - Keep forward_vel_command = 0.0 (don't move forward while searching)
+            forward_vel_command = 0.0
             yaw_command = -SEARCH_YAW_VEL if self.last_detection_pos >=0 else SEARCH_YAW_VEL # TODO: Implement SEARCH state behavior
             
         elif self.state == State.TRACK:
