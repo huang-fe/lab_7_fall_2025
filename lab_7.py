@@ -100,10 +100,10 @@ class StateMachineNode(Node):
             # bbox=vision_msgs.msg.BoundingBox2D(center=vision_msgs.msg.Pose2D(position=vision_msgs.msg.Point2D(x=285.0068359375, y=299.092529296875)
             centers = [(detection.bbox.center.position.x / IMAGE_WIDTH - 0.5) for detection in msg.detections]
             if not self.target_pos:
-                self.target_pos = np.argmax([abs(c) for c in centers])
+                self.target_pos = np.argmin([abs(c) for c in centers])
             else: 
                 self.last_detection_pos = self.target_pos
-                self.target_pos = np.argmax([np.linalg.norm(c-self.last_detection_pos) for c in centers])
+                self.target_pos = np.argmin([np.linalg.norm(c-self.last_detection_pos) for c in centers])
             self.last_detection_time = self.get_clock().now()
 
 
