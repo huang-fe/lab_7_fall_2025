@@ -31,16 +31,15 @@ class KarelPupper:
         msg = String()
         msg.data = f"start:{obj}"
         self.tracking_control_publisher.publish(msg)
-        rclpy.spin_once(self.node, timeout_sec=0.1)
-        self.node.get_logger().info(f'Started tracking: {obj}')
-        
+        rclpy.spin_once(self.node, timeout_sec=0.1) 
+
     def end_tracking(self):
         self.tracking_enabled = False
         self.tracking_object = None
         msg = String()
         msg.data = "stop" 
         self.tracking_control_publisher.publish(msg)
-        relpy.spin_once(self.node, timeout_sec=0.1)
+        rclpy.spin_once(self.node, timeout_sec=0.1)
         self.stop()
         self.node.get_logger().info('Stopped tracking') 
 
