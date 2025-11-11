@@ -101,7 +101,7 @@ class StateMachineNode(Node):
             centers = [(detection.bbox.center.position.x / IMAGE_WIDTH - 0.5) for detection in msg.detections]
             print("centers: ", centers)
             self.last_detection_pos = self.target_pos
-            self.target_pos = np.argmin([np.linalg.norm(c-self.last_detection_pos) for c in centers])
+            self.target_pos = centers[np.argmin([np.abs(c-self.last_detection_pos) for c in centers])]
             print("target pos: ", self.target_pos)
             self.last_detection_time = self.get_clock().now()
 
