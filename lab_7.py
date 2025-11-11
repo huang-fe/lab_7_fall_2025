@@ -95,7 +95,6 @@ class StateMachineNode(Node):
         - Store the normalized position in self.target_pos
         - Update self.last_detection_time with the current timestamp
         """
-        breakpoint()
         if msg.detections:
             # bbox=vision_msgs.msg.BoundingBox2D(center=vision_msgs.msg.Pose2D(position=vision_msgs.msg.Point2D(x=285.0068359375, y=299.092529296875)
             centers = [(detection.bbox.center.position.x / IMAGE_WIDTH - 0.5) for detection in msg.detections]
@@ -104,7 +103,7 @@ class StateMachineNode(Node):
             else: 
                 self.last_detection_pos = self.target_pos
                 self.target_pos = np.argmax([np.linalg.norm(c-self.last_detection_pos) for c in centers])
-            self.last_detection_time = self.timer()
+            self.last_detection_time = self.get_clock().now()
 
 
     def timer_callback(self):
@@ -124,7 +123,7 @@ class StateMachineNode(Node):
         # - Convert the time difference from nanoseconds to seconds
         # - If time_since_detection > TIMEOUT, transition to State.SEARCH
         # - Otherwise, transition to State.TRACK
-        time_since_detection = (self.timer()-self.last_detection_time) / 1e-9  # TODO: Calculate time since last detection
+        time_since_detection = (self.get_clock().now()-self.last_detection_time) / 1e-9  # TODO: Calculate time since last detection
         
         if time_since_detection > TIMEOUT:  # TODO: Replace with condition checking
             self.state = State.SEARCH
