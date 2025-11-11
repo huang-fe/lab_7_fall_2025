@@ -104,7 +104,7 @@ class StateMachineNode(Node):
             else: 
                 self.last_detection_pos = self.target_pos
                 self.target_pos = np.argmax([np.linalg.norm(c-self.last_detection_pos) for c in centers])
-            self.last_detection_time = self.get_clock().now().seconds()
+            self.last_detection_time = self.get_clock().now()
 
 
     def timer_callback(self):
@@ -124,7 +124,7 @@ class StateMachineNode(Node):
         # - Convert the time difference from nanoseconds to seconds
         # - If time_since_detection > TIMEOUT, transition to State.SEARCH
         # - Otherwise, transition to State.TRACK
-        time_since_detection = (self.get_clock().now().seconds() - self.last_detection_time)   # TODO: Calculate time since last detection
+        time_since_detection = (self.get_clock().now() - self.last_detection_time).nanoseconds / 1e-9   # TODO: Calculate time since last detection
         
         if time_since_detection > TIMEOUT:  # TODO: Replace with condition checking
             self.state = State.SEARCH
