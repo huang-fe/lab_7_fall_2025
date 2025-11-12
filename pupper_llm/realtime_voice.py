@@ -254,6 +254,7 @@ class RealtimeVoiceNode(Node):
                     ]
                 }
             }
+            
             await self.websocket.send(json.dumps(image_message))
             self.camera_image_pending = False
 
