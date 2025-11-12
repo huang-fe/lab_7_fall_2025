@@ -239,8 +239,31 @@ class RealtimeVoiceNode(Node):
         - Set self.camera_image_pending = False to prevent sending the same image multiple times
         - Wrap in try/except to catch and log any errors
         """
-        pass  # TODO: Implement send_camera_image_if_available
-    
+        try:
+            if not self.latest_camera_image_base64 or not self.camera_image_pending:
+                logger.debug("No camera image available to send.")
+                return
+
+            image_message = {
+                "type": "conversation.item.create",
+                "item": {
+                    "type": "message",
+                    "role": "user",
+                    "content": [
+                        {"type": "input_text", "text": "[Current camera view]"},
+                        {
+                            "type": "input_image",
+                            "image_url": f"data:image/jpeg;base64,{self.latest_camera_image_base64}"
+                        }
+                    ]
+                }
+            }
+            await self.websocket.send(json.dumps(image_message))
+            self.camera_image_pending = False
+
+        except Exception as e:
+            logger.error(f"Error sending camera image: {e}")
+        
     async def connect_realtime_api(self):
         """Connect to OpenAI Realtime API via WebSocket."""
         # NEW FOR LAB 7: Using "gpt-realtime" model which supports multimodal input (audio + images)
