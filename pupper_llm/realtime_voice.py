@@ -180,8 +180,6 @@ class RealtimeVoiceNode(Node):
         except Exception as e:
             logger.error(f"Error processing camera snapshot: {e}")
 
-
-
     async def _delayed_unmute(self):
         """Unmute microphone after 3 second delay to prevent echo."""
         await asyncio.sleep(3.0)  # Longer delay to ensure no echo
