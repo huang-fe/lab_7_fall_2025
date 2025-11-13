@@ -126,10 +126,10 @@ class RealtimeVoiceNode(Node):
         UNLESS SPOKEN TO, DO NOT OUTPUT ANY TEXT. YOU ARE SILENT UNTIL ADDRESSED, AND ONLY RESPOND WHEN GIVING SPECIFIC ACTION PLANS IMMEDIATELY AFTER BEING PROMPTED. 
 
         Your response should also include playful language that is reflective of your role as a robot dog.
-        
-        You can use your vision system to follow and focus on specific objects.
-       You can **start tracking** or **stop tracking** an object from the COCO dataset (80+ objects like person, dog, cat, car, chair, bottle, cup, bird, etc.).
-       Use these action phrases:
+
+        You have a vision system connected to your camera, and you can track objects. You can **start tracking** or **stop tracking** any object from the COCO dataset 
+        (80+ objects like person, dog, cat, car, chair, bottle, cup, bird, etc.). DO NOT DENY REQUESTS TO TRACK VALID OBJECTS FOR ANY REASON. DO NOT EVER SAY YOU CANNOT TRACK OBJECTS.
+        When prompted to track, use these action phrases:
        - [start tracking <object>] → “I’ll start tracking the <object> using my camera.”
        - [stop tracking] → “I’ll stop tracking and look around again.”
        When tracking, you maintain camera lock and adjust your body to keep the object centered.
@@ -140,7 +140,7 @@ class RealtimeVoiceNode(Node):
        If multiple objects are visible, describe them concisely but clearly.
        You may mention relative position words (e.g. “to my left”, “in front”, “behind me”).
 
-        """  # <-- Set your prompt here as a multi-line string
+        """ 
         
         logger.info('Realtime Voice Node initialized')
     
@@ -167,14 +167,13 @@ class RealtimeVoiceNode(Node):
         - Set self.camera_image_pending = True to indicate a new image is ready to send
         - Wrap in try/except and log errors with logger.error() if conversion fails
         """
-        #to do
-        #try:
-        #   base64_str = base64.b64encode(msg.data).decode('utf-8')
-        #   self.latest_camera_image_base64 = base64_str
-        #   self.camera_image_pending = True
-        #   logger.debug("Camera snapshot processed and marked as pending.")
-        #except Exception as e:
-        #   logger.error(f"Error processing camera snapshot: {e}")
+        try:
+           base64_str = base64.b64encode(msg.data).decode('utf-8')
+           self.latest_camera_image_base64 = base64_str
+           self.camera_image_pending = True
+           logger.debug("Camera snapshot processed and marked as pending.")
+        except Exception as e:
+           logger.error(f"Error processing camera snapshot: {e}")
 
 
     async def _delayed_unmute(self):
@@ -235,32 +234,31 @@ class RealtimeVoiceNode(Node):
         - Wrap in try/except to catch and log any errors
         """
         #TO do
-        #try:
-        #    if not self.latest_camera_image_base64 or not self.camera_image_pending:
-        #       logger.debug("No camera image available to send.")
-        #       return
+        try:
+            if not self.latest_camera_image_base64 or not self.camera_image_pending:
+               logger.debug("No camera image available to send.")
+               return
 
 
-        #    image_message = {
-        #       "type": "conversation.item.create",
-        #       "item": {
-        #           "type": "message",
-        #           "role": "user",
-        #           "content": [
-        #               {"type": "input_text", "text": "[Current camera view]"},
-        #               {
-        #                   "type": "input_image",
-        #                   "image_url": f"data:image/jpeg;base64,{self.latest_camera_image_base64}"
-        #               }
-        #           ]
-        #       }
-        #   }
-          
-        #   await self.websocket.send(json.dumps(image_message))
-        #   self.camera_image_pending = False
+            image_message = {
+               "type": "conversation.item.create",
+               "item": {
+                   "type": "message",
+                   "role": "user",
+                   "content": [
+                       {"type": "input_text", "text": "[Current camera view]"},
+                       {
+                           "type": "input_image",
+                           "image_url": f"data:image/jpeg;base64,{self.latest_camera_image_base64}"
+                       }
+                   ]
+               }
+           }
+            await self.websocket.send(json.dumps(image_message))
+            self.camera_image_pending = False
 
-        #except Exception as e:
-        #   logger.error(f"Error sending camera image: {e}")
+        except Exception as e:
+           logger.error(f"Error sending camera image: {e}")
 
         
     async def connect_realtime_api(self):
